@@ -9,7 +9,8 @@ from quote_model import QuoteModel
 
 class ImportInterface(ABC):
 
-    allowed_extensions = []
+    def __init(self):
+        allowed_extensions = []
 
     @classmethod
     def can_ingest(cls, path):
@@ -21,6 +22,7 @@ class ImportInterface(ABC):
     def parse(cls, path: str) -> List[QuoteModel]:
         pass
 
+
 class CSVImporter(ImportInterface):
     """Read files with a csv extension."""
     allowed_extensions = ['csv']
@@ -30,14 +32,19 @@ class CSVImporter(ImportInterface):
         if not cls.can_ingest(path):
             raise Exception('cannot ingest exception')
 
-        quotes = []
-        df = pd.read_csv(path, header=0)
+        try:
+            quotes = []
+            df = pd.read_csv(path, header=0)
 
-        for index, row in df.iterrows():
-            new_quote = QuoteModel(row['body'], row['author'])
-            quotes.append(new_quote)
-
-        return QuoteModel
+            for index, row in df.iterrows():
+                new_quote = QuoteModel(row['body'], row['author'])
+                quotes.append(new_quote)
+            return quotes
+        except FileNotFoundError:
+            print(f"File not found: {path}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            
     
 class DocxImporter(ImportInterface):
     """Read files with a docx extension."""
@@ -47,20 +54,24 @@ class DocxImporter(ImportInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             raise Exception('cannot ingest exception')
+        try:
+            quotes = []
+            doc = docx.Document(path)
 
-        quotes = []
-        doc = docx.Document(path)
+            for para in doc.paragraphs:
+                if para.text.strip():
+                    parts = para.text.split('-')
+                    if len(parts) == 2:
+                        body = parts[0].strip()
+                        name = parts[1].strip()
+                        new_quote = QuoteModel(body, name)
+                        quotes.append(new_quote)
 
-        for para in doc.paragraphs:
-            if para.text.strip():
-                parts = para.text.split('-')
-                if len(parts) == 2:
-                    quote = parts[0].strip()
-                    name = parts[1].strip()
-                    new_quote = QuoteModel(quote, name)
-                    quotes.append(new_quote)
-
-        return quote
+            return quotes
+        except FileNotFoundError:
+            print(f"File not found: {path}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
     
 class PDFImporter(ImportInterface):
     """Read files with a pdf extension."""
@@ -71,16 +82,22 @@ class PDFImporter(ImportInterface):
         if not cls.can_ingest(path):
             raise Exception('cannot ingest exception')
 
-        pdftotext_path = r'C:\Program Files\Xpdf\bin64\pdftotext.exe'
-        result = subprocess.run([pdftotext_path, path, '-'], stdout=subprocess.PIPE, text=True, check=True)
-        extracted_text = result.stdout
-        quote_author_pairs = re.findall(r'"(.*?)" - (.*?)\s*(?="|$)', extracted_text)
+        try:
+            pdftotext_path = r'C:\Program Files\Xpdf\bin64\pdftotext.exe'
+            result = subprocess.run([pdftotext_path, path, '-'], stdout=subprocess.PIPE, text=True, check=True)
+            extracted_text = result.stdout
+            quote_author_pairs = re.findall(r'"(.*?)" - (.*?)\s*(?="|$)', extracted_text)
 
-        quotes = []
-        for quote, author in quote_author_pairs:
-            new_quote = QuoteModel(quote, author)
-            quotes.append(new_quote)
-        return quote
+            quotes = []
+            for quote, author in quote_author_pairs:
+                new_quote = QuoteModel(quote, author)
+                quotes.append(new_quote)
+            return quotes
+        except FileNotFoundError:
+            print(f"File not found: {path}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            
 
 class TXTImporter(ImportInterface):
     """Read files with a txt extension."""
@@ -90,13 +107,16 @@ class TXTImporter(ImportInterface):
     def parse(cls, path: str) -> List[QuoteModel]:
         if not cls.can_ingest(path):
             raise Exception('cannot ingest exception')
-
-        quotes = []
-        with open(path, 'r') as file:
-            for line in file:
-                quote = (line.split(' - ')[0]).replace("\n", "")
-                author = (line.split(' - ')[1]).replace("\n", "")
-                new_quote = QuoteModel(quote,author)
-                quotes.append(new_quote)
-        return quotes
-        
+        try:
+            quotes = []
+            with open(path, 'r',  encoding='utf-8-sig') as file:
+                for line in file:
+                    quote = (line.split(' - ')[0]).replace("\n", "")
+                    author = (line.split(' - ')[1]).replace("\n", "")
+                    new_quote = QuoteModel(quote,author)
+                    quotes.append(new_quote)
+            return quotes
+        except FileNotFoundError:
+            print(f"File not found: {path}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
