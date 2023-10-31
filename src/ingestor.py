@@ -22,18 +22,3 @@ class Ingestor(ImportInterface):
         for importer in cls.importers:
             if importer.can_ingest(path):
                 return importer.parse(path)
-
-
-paths = [
-    "_data/DogQuotes/DogQuotesDOCX.docx",
-    "_data/DogQuotes/DogQuotesCSV.csv",
-    "_data/DogQuotes/DogQuotesPDF.pdf",
-    "_data/DogQuotes/DogQuotestxt.txt",
-]
-
-quotes = []
-
-for path in paths:
-    quotes.append(Ingestor.parse(path))
-
-quote = random.choice(quotes)[0]
