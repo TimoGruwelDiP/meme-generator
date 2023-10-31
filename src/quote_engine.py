@@ -11,7 +11,7 @@ from quote_model import QuoteModel
 class ImportInterface(ABC):
     """Import Interface which is used by multiple subclasses."""
 
-    def __init(self):
+    def __init__(self):
         """Initialize ImportInterface."""
         allowed_extensions = []
 

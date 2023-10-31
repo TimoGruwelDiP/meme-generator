@@ -12,10 +12,6 @@ This project consists of multiple modules:
 - quote_engine.py ==> The Quote Engine module is responsible for ingesting many types of files that contain quotes.
 - quote_model.py ==> The QuoteModel is used to create object instances of quotes
 
-module explanation 
-module explanation
-module explanation
-
 ### Instructions and Usage
 
 #### Using the Command Prompt
