@@ -5,7 +5,7 @@ import argparse
 from ingestor import Ingestor
 from meme_engine import MemeEngine
 from quote_model import QuoteModel
-
+from pathlib import Path
 
 def generate_meme(path=None, body=None, author=None):
     """Generate a meme given an path and a quote."""
@@ -20,7 +20,7 @@ def generate_meme(path=None, body=None, author=None):
 
         img = random.choice(imgs)
     else:
-        img = path[0]
+        img = path  
 
     if body is None:
         quote_files = [
@@ -40,6 +40,8 @@ def generate_meme(path=None, body=None, author=None):
         quote = QuoteModel(body, author)
 
     meme = MemeEngine("./tmp")
+    meme.create_folder()
+
     path = meme.make_meme(img, quote.body, quote.author)
     return path
 

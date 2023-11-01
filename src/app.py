@@ -10,6 +10,7 @@ from pathlib import Path
 
 app = Flask(__name__)
 meme = MemeEngine("./static")
+meme.create_folder()
 
 
 def setup():

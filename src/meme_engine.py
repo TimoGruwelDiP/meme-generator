@@ -39,6 +39,14 @@ class MemeEngine:
         draw.text((45, 115), "-" + author, font=font_author, fill="white")
         return image
 
+    def create_folder(self):
+        folder_path = Path(self.destination)
+        if not folder_path.is_dir():
+            folder_path.mkdir()
+            print(f"Folder '{self.destination}' created successfully.")
+        else:
+            print(f"Folder '{self.destination}' already exists.")
+
     def make_meme(self, img_path, text, author):
         """Make meme by using earlier defined methods."""
         try:
