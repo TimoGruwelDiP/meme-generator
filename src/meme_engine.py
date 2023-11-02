@@ -1,7 +1,7 @@
 """A meme_engine is able to create, edit and save memes."""
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
-
+import textwrap 
 
 class MemeEngine:
     """Meme Engine class that is consists of different methods to generate memes."""
@@ -32,11 +32,17 @@ class MemeEngine:
 
     def add_quote(self, image, quote, author):
         """Add quotes to meme"."""
+        line_width = 30
+        new_lines = len(quote) // line_width + 1
+        author = "\n"*new_lines + "-" + author
         draw = ImageDraw.Draw(image)
+        print(new_lines)
+        print(author)
+        wrapped_quote = textwrap.fill(quote, width=line_width)
         font_quote = ImageFont.truetype("fonts/impact.ttf", size=30)
         font_author = ImageFont.truetype("fonts/impact.ttf", size=20)
-        draw.text((40, 80), quote, font=font_quote, fill="white")
-        draw.text((45, 115), "-" + author, font=font_author, fill="white")
+        draw.text((40, 80), wrapped_quote, font=font_quote, fill="white")
+        draw.text((45, 115), author, font=font_author, fill="white")
         return image
 
     def create_folder(self):

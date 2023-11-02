@@ -58,7 +58,11 @@ def meme_post():
     image_url = request.form.get("image_url")
     quote = request.form.get("body")
     author = request.form.get("author")
-    response = requests.get(image_url)
+    try:
+        response = requests.get(image_url, timeout=(5,10))
+    except requests.exceptions.ConnectionError:
+        return render_template("meme_error.html")
+
     if response.status_code == 200:
         dest_path = str(Path("./tmp/", "temp_web_image.jpg"))
         with open(dest_path, "wb") as f:
